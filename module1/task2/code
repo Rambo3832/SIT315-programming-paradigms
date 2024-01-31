@@ -1,0 +1,30 @@
+void setup()
+{
+  
+  pinMode(13, OUTPUT);
+  pinMode(3,INPUT);
+  attachInterrupt(digitalPinToInterrupt(3),SENSOR_INTERRUPT, CHANGE);
+  Serial.begin(9600);
+}
+
+void loop()
+{
+  
+  
+}
+ 
+ void SENSOR_INTERRUPT()
+ {
+   if(digitalRead(3)==HIGH)
+  {
+    
+    digitalWrite(13,HIGH);
+    Serial.println("LED IS ON -");
+  }
+  else
+  {
+  
+    digitalWrite(13,LOW);
+    Serial.println("LED IS OFF - ");
+  }
+ }
