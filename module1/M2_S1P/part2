@@ -1,0 +1,41 @@
+const byte LED_PIN = 13; 
+const byte METER_PIN = A4;
+
+void setup() {
+
+  pinMode(LED_PIN, OUTPUT);
+  
+  pinMode(METER_PIN, INPUT);
+
+  Serial.begin(9600);
+
+  startTimer(3.4);
+
+}
+
+void loop() {
+
+}
+
+void startTimer(double timerFrequency){
+
+  noInterrupts();
+  
+  TCCR1A = 0;
+  TCCR1B = 0;
+
+  double period = 1.0 / timerFrequency; // Calculate period
+  double ocrValue = period * 16000000 / 1024; // Calculate OCR value
+  OCR1A = (int) ocrValue; 
+  TCCR1B |= (1 << WGM12); // CTC mode
+  TCCR1B |= (1 << CS12) | (1 << CS10); // 1024 prescaler  
+  TIMSK1 |= (1 << OCIE1A); // enable timer compare interrupt
+
+  interrupts();
+}
+
+ISR(TIMER1_COMPA_vect){
+
+  digitalWrite(LED_PIN, digitalRead(LED_PIN) ^ 1);  
+
+}
