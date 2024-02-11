@@ -1,0 +1,41 @@
+// Use built-in LED on Pin 13
+const int ledPin = 13;  
+// Use potentiometer that is built-in to Tinkercad  
+const int potPin = A0;
+
+// Timer1 not fully supported
+// Use Timer0 instead
+
+// Interrupt Service Routine 
+ISR(TIMER0_COMPA_vect) {
+  digitalWrite(ledPin, digitalRead(ledPin) ^ 1);   // Toggle LED
+}
+void startTimer(int freqHz) {
+  noInterrupts(); // disable interrupts
+  // Timer0 is 8-bit timer so calculate for 8MHz clock
+  int ocrValue = 125000 / freqHz;  
+
+  // Set CTC mode and prescaler 64
+  TCCR0A |= (1 << WGM01);  
+  TCCR0B = (1 << CS01) | (1 << CS00); 
+
+  // Set compare match value 
+  OCR0A = ocrValue;      
+
+  // Enable compare match interrupt  
+  TIMSK0 |= (1 << OCIE0A);
+
+  interrupts(); // enable interrupts
+}
+
+void setup() {
+  pinMode(ledPin, OUTPUT);
+  startTimer(2); // Start timer with 2 Hz blink  
+}
+
+void loop() {
+  int potValue = analogRead(potPin);
+  int freqHz = map(potValue, 0, 1023, 1, 10);
+  startTimer(freqHz);
+  delay(10); 
+}
