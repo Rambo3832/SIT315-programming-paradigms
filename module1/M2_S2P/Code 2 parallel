@@ -1,0 +1,92 @@
+#include <iostream>
+#include <thread>
+#include <vector>
+#include <chrono>
+
+using namespace std; 
+
+// Size of vectors
+const int VEC_SIZE = 100000000;  
+
+// Number of chunks
+const int NUM_CHUNKS = 4;
+
+// Generate random vector 
+void generateVector(vector<int>& vec) {
+
+  int size = VEC_SIZE / NUM_CHUNKS;
+
+  for(int i=0; i<NUM_CHUNKS; i++) {
+
+    // Thread function 
+    auto func = [&, i] {  
+      
+      int start = i * size;
+      int end = start + size;
+
+      for(int j=start; j<end; j++) {
+        vec[j] = rand() % 100; 
+      }
+
+    };
+    
+    // Launch thread 
+    thread t(func);
+    
+    // Join thread
+    t.join();   
+  }
+
+}
+
+// Add two vectors 
+void addVectors(vector<int>& v1, vector<int>& v2, vector<int>& sum) {
+
+  int size = VEC_SIZE / NUM_CHUNKS;
+
+  for(int i=0; i<NUM_CHUNKS; i++) {
+  
+    // Thread function
+    auto func = [&, i] { 
+
+      int start = i * size;
+      int end = start + size;
+
+      for(int j=start; j<end; j++) {
+        sum[j] = v1[j] + v2[j];  
+      }   
+
+    };
+
+    // Launch thread
+    thread t(func); 
+    
+    // Join thread 
+    t.join();    
+  
+  }
+
+}
+
+int main() {
+
+  // Vectors 
+  vector<int> v1(VEC_SIZE); 
+  vector<int> v2(VEC_SIZE);
+  vector<int> sum(VEC_SIZE);
+
+  // Generate threads and add vectors 
+  auto startTime = chrono::high_resolution_clock::now();  
+
+  generateVector(v1);
+  generateVector(v2);
+  addVectors(v1, v2, sum);
+
+  auto endTime = chrono::high_resolution_clock::now();
+
+  auto duration = chrono::duration_cast<chrono::microseconds>(endTime - startTime);
+
+  cout << "Duration: " << duration.count() << " microseconds";
+
+  return 0;
+}
