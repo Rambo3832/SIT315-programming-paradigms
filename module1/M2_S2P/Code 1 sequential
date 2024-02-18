@@ -1,0 +1,59 @@
+#include <chrono> // Include chrono library for timing functions
+
+#include <cstdlib> 
+
+#include <iostream>
+
+#include <time.h> // Include time library for random number seed
+
+using namespace std::chrono; 
+
+using namespace std;
+
+// Function to fill vectors with random numbers
+void randomVector(int vector[], int size) {
+
+  for (int i = 0; i < size; i++) {
+
+    vector[i] = rand() % 100;  
+
+  }
+
+}
+
+int main() {
+
+  unsigned long size = 100000000; // Size of vector
+  
+  srand(time(0)); // random number generator
+  
+  int *v1, *v2, *v3; // Declare vectors
+  
+  // Start timer
+  auto start = high_resolution_clock::now(); 
+  
+  // Allocate memory for vectors
+  v1 = (int *)malloc(size * sizeof(int));  
+  v2 = (int *)malloc(size * sizeof(int));
+  v3 = (int *)malloc(size * sizeof(int));
+
+  // Initialize v1 and v2 with random numbers
+  randomVector(v1, size);
+  randomVector(v2, size);
+
+  // Sequential vector addition
+  for (int i = 0; i < size; i++) {
+    v3[i] = v1[i] + v2[i];  
+  }
+
+  // Stop timer
+  auto stop = high_resolution_clock::now();
+
+  // Calculate duration
+  auto duration = duration_cast<microseconds>(stop - start);
+
+  // Print execution time
+  cout << "Time taken by function :" << duration.count() << " microseconds" << endl;
+  
+  return 0;
+}
