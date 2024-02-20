@@ -1,0 +1,75 @@
+#include <iostream>
+#include <cstdlib>
+#include <chrono>
+#include <pthread.h>
+
+using namespace std;
+using namespace std::chrono;
+
+#define MAX_THREADS 8
+const int MATRIX_SIZE = 300;
+
+int matrixA[MATRIX_SIZE][MATRIX_SIZE];
+int matrixB[MATRIX_SIZE][MATRIX_SIZE];
+int resultMatrix[MATRIX_SIZE][MATRIX_SIZE];
+
+int threadCounter = 0;
+int chunkSize = MATRIX_SIZE / MAX_THREADS;
+
+void *multiplyMatrix(void *args)
+{
+    int threadId = threadCounter++;
+
+    int startRow = threadId * chunkSize;
+    int endRow = (threadId + 1) * chunkSize;
+
+    for (int i = startRow; i < endRow; ++i)
+    {
+        for (int j = 0; j < MATRIX_SIZE; ++j)
+        {
+            resultMatrix[i][j] = 0;
+            for (int k = 0; k < MATRIX_SIZE; ++k)
+            {
+                resultMatrix[i][j] += matrixA[i][k] * matrixB[k][j];
+            }
+        }
+    }
+    return NULL;
+}
+
+int main()
+{
+    cout << "Filling Matrices with random values: " << MATRIX_SIZE << endl;
+
+    srand(time(0));
+
+    for (int i = 0; i < MATRIX_SIZE; i++)
+    {
+        for (int j = 0; j < MATRIX_SIZE; j++)
+        {
+            matrixA[i][j] = rand() % 100;
+            matrixB[i][j] = rand() % 100;
+        }
+    }
+
+    auto start = high_resolution_clock::now();
+
+    pthread_t matrixThreads[MAX_THREADS];
+
+    for (int i = 0; i < MAX_THREADS; ++i)
+    {
+        pthread_create(&matrixThreads[i], NULL, &multiplyMatrix, NULL);
+    }
+
+    for (int i = 0; i < MAX_THREADS; ++i)
+    {
+        pthread_join(matrixThreads[i], NULL);
+    }
+
+    auto end = high_resolution_clock::now();
+
+    auto duration = duration_cast<microseconds>(end - start);
+    cout << "Time taken for multiplication: " << duration.count() / 1E6 << " seconds" << endl;
+
+    return 0;
+}
