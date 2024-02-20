@@ -1,0 +1,59 @@
+#include <iostream>
+#include <cstdlib> 
+#include <chrono>
+
+using namespace std;
+using namespace std::chrono;
+
+void initializeMatrices(int *A, int *B, int size) {
+
+  for(int i = 0; i < size; i++) {
+    for(int j = 0; j < size; j++) {
+      int index = i*size + j;
+      A[index] = rand() % 100;
+      B[index] = rand() % 100;
+    }
+  }
+}
+
+void multiplyMatrices(int *A, int *B, int *C, int size) {
+
+  for(int i = 0; i < size; i++) {
+    for(int j = 0; j < size; j++) {
+      int index = i*size + j;
+      C[index] = 0;
+
+      for(int k = 0; k < size; k++) {
+        C[index] += A[i*size + k] * B[k*size + j];  
+      }
+    }
+  }
+}
+int main() {
+  
+  int size;
+  cout << "Enter size of matrix: ";
+  cin >> size;
+
+  int *A = new int[size*size]; 
+  int *B = new int[size*size];
+  int *C = new int[size*size];
+
+  initializeMatrices(A, B, size);
+
+  auto start = high_resolution_clock::now();
+
+  multiplyMatrices(A, B, C, size);
+  
+  auto stop = high_resolution_clock::now();
+
+  auto duration = duration_cast<microseconds>(stop - start);
+
+  cout << "Time taken : " << duration.count() << " microseconds" << endl;
+
+  delete [] A;
+  delete [] B;
+  delete [] C;
+
+  return 0;
+}
