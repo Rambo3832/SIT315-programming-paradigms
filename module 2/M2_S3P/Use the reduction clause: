@@ -1,0 +1,11 @@
+// OpenMP Execution with reduction clause
+auto start_omp_reduction = high_resolution_clock::now();
+int total_reduction = 0;
+#pragma omp parallel for default(none) shared(v1, v2, v3, size) reduction(+:total_reduction)
+for (int i = 0; i < size; i++) {
+    total_reduction += v1[i] + v2[i];
+}
+auto stop_omp_reduction = high_resolution_clock::now();
+auto duration_omp_reduction = duration_cast<microseconds>(stop_omp_reduction - start_omp_reduction);
+cout << "OpenMP with reduction clause Execution Time: " << duration_omp_reduction.count() << " microseconds" << endl;
+cout << "Total (reduction): " << total_reduction << endl;
