@@ -1,0 +1,15 @@
+auto start_omp_atomic = high_resolution_clock::now();
+int total_atomic = 0;
+#pragma omp parallel default(none) shared(v1, v2, v3, size, total_atomic)
+{
+    #pragma omp for
+    for (int i = 0; i < size; i++) {
+        int temp = v1[i] + v2[i];
+        #pragma omp atomic
+        total_atomic += temp;
+    }
+}
+auto stop_omp_atomic = high_resolution_clock::now();
+auto duration_omp_atomic = duration_cast<microseconds>(stop_omp_atomic - start_omp_atomic);
+cout << "OpenMP with atomic update Execution Time: " << duration_omp_atomic.count() << " microseconds" << endl;
+cout << "Total (atomic): " << total_atomic << endl;
