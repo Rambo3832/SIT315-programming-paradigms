@@ -1,0 +1,16 @@
+auto start_omp_critical = high_resolution_clock::now();
+int total_critical = 0;
+#pragma omp parallel default(none) shared(v1, v2, v3, size) private(total_critical)
+{
+    int local_total = 0;
+    #pragma omp for
+    for (int i = 0; i < size; i++) {
+        local_total += v1[i] + v2[i];
+    }
+    #pragma omp critical
+    total_critical += local_total;
+}
+auto stop_omp_critical = high_resolution_clock::now();
+auto duration_omp_critical = duration_cast<microseconds>(stop_omp_critical - start_omp_critical);
+cout << "OpenMP with private variables and critical section Execution Time: " << duration_omp_critical.count() << " microseconds" << endl;
+cout << "Total (critical): " << total_critical << endl;
