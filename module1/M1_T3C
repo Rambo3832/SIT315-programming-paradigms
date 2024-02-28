@@ -1,0 +1,55 @@
+int pirSensorPin1 = 2; // PIR sensor 1 connected to digital pin 2
+int pirSensorPin2 = 3; // PIR sensor 2 connected to digital pin 3
+int ledPin = 13;
+int additionalLedPin = 12;
+
+void setup()
+{
+  pinMode(ledPin, OUTPUT);
+  pinMode(additionalLedPin, OUTPUT);
+  
+
+  pinMode(pirSensorPin1, INPUT);
+  attachInterrupt(digitalPinToInterrupt(pirSensorPin1), pirSensorInterrupt1, CHANGE);
+
+  pinMode(pirSensorPin2, INPUT);
+  attachInterrupt(digitalPinToInterrupt(pirSensorPin2), pirSensorInterrupt2, CHANGE);
+
+  Serial.begin(9600);
+}
+
+void loop()
+{
+  // No need for any code in the loop as interrupts will handle sensor changes
+}
+
+
+void pirSensorInterrupt1()
+{
+  if (digitalRead(pirSensorPin1) == HIGH)
+  {
+    digitalWrite(additionalLedPin, HIGH);
+    Serial.println("PIR Sensor 1 Detected Motion - Additional LED is ON");
+  }
+  else
+  {
+    digitalWrite(additionalLedPin, LOW);
+    Serial.println("PIR Sensor 1 Detected No Motion - Additional LED is OFF");
+  }
+ 
+}
+
+void pirSensorInterrupt2()
+{
+  if (digitalRead(pirSensorPin2) == HIGH)
+  {
+    digitalWrite(additionalLedPin, HIGH);
+    Serial.println("PIR Sensor 2 Detected Motion - Additional LED is ON");
+  }
+  else
+  {
+    digitalWrite(additionalLedPin, LOW);
+    Serial.println("PIR Sensor 2 Detected No Motion - Additional LED is OFF");
+  }
+  
+}
